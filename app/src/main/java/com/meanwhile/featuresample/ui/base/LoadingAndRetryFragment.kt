@@ -5,6 +5,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.meanwhile.common.Outcome
 
@@ -18,8 +19,10 @@ import com.meanwhile.common.Outcome
 // TODO copied from checkout, move to common if seems interesting
 abstract class LoadingAndRetryFragment<T> : Fragment() {
 
+    // TODO CON: exposing this fixed views might not be too flexible
     abstract val contentView: View
     abstract val errorGroup: View
+    abstract val errorText: TextView
     abstract val errorButton: Button
     abstract val loadingView: View
 
@@ -64,6 +67,7 @@ abstract class LoadingAndRetryFragment<T> : Fragment() {
         loadingView.visibility = GONE
         contentView.visibility = GONE
         errorGroup.visibility = VISIBLE
+        errorText.text = e.message
     }
 
     private fun toLoadingState() {

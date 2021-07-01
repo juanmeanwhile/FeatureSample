@@ -6,4 +6,5 @@ package com.adidas.sample_feature.ui.featurescreen
 sealed class SampleFeatureEvent {
     class OneEvent : SampleFeatureEvent()
     class OtherEvent : SampleFeatureEvent()
+    class ActionError(ex: Throwable) : SampleFeatureEvent()
 }

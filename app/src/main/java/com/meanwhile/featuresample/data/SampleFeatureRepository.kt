@@ -8,14 +8,17 @@ import com.meanwhile.featuresample.data.toActionResponse
 import com.meanwhile.featuresample.data.toSampleData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import java.io.IOException
 import com.adidas.sample_feature.model.gw.ActionResponse as GwActionResponse
 import com.meanwhile.featuresample.model.gw.SampleData as GwSampleData
 
 class SampleFeatureRepository() {
 
-    private var doneActions = 0
+    private var doneActions = 1
 
-    // TODO add db
+    private var mainDataError = false
+
+    // TODO add db layer
     fun getData() = flow<Outcome<SampleData>> {
         emit(Outcome.loading())
 
@@ -26,23 +29,36 @@ class SampleFeatureRepository() {
         kotlin.runCatching {
             // val sampleData = api.getSampleData()
             delay(1500) // simulate call
-            val gwData = GwSampleData("Data from the initial request")
-            emit(Outcome.success(gwData.toSampleData()))
+
+            if (mainDataError) {
+                val gwData = GwSampleData("Data from the initial request")
+                emit(Outcome.success(gwData.toSampleData()))
+            } else {
+                mainDataError = true
+                throw IOException("It's gateway's fault")
+            }
+
         }.onFailure {
             emit(Outcome.failure(it))
         }
     }
 
-    fun performActionAtGw() = flow<Outcome<ActionResponse>> { // TODO return different data
+    fun performActionAtGw() = flow<Outcome<ActionResponse>> {
         doneActions++ // TODO for showcase purposes
 
         emit(Outcome.loading())
-
-        kotlin.runCatching {
+        runCatching {
             // val sampleData = api.performActionAtGw()
             delay(1000) // simulate call
-            val gwData = GwActionResponse(doneActions)
-            emit(Outcome.success(gwData.toActionResponse()))
+
+            if (doneActions % 4 == 0){
+                //Return error every 4 actions
+                throw IOException("It's gateway's fault")
+            }  else {
+                val gwData = GwActionResponse(doneActions)
+                emit(Outcome.success(gwData.toActionResponse()))
+            }
+
         }.onFailure {
             emit(Outcome.failure(it))
         }

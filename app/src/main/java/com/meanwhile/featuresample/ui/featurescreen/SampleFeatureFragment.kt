@@ -8,6 +8,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.adidas.sample_feature.ui.base.LoadingAndRetryFragment
 import com.adidas.sample_feature.ui.featurescreen.UiData
@@ -21,7 +22,7 @@ import com.meanwhile.featuresample.databinding.FragmentLoadingAndRetryBinding
  *  - Handles whole screen loading/success/Error&Retry states
  *  - More request being trigger ed as a result of a user action which will modify the UI state
  *  - Using db as a local source of data for Offline mode.
- *  - Unidirection flow of information: User action goes to viewModel which ends up generating a new UI state.
+ *  - Unidirectional flow of information: User action goes to viewModel which ends up generating a new UI state.
  */
 class SampleFeatureFragment : LoadingAndRetryFragment<UiData>() {
 
@@ -42,11 +43,10 @@ class SampleFeatureFragment : LoadingAndRetryFragment<UiData>() {
     override val errorButton: Button
         get() = binding.retryButton
 
-    private lateinit var viewModel: SampleFeatureViewModel
+    override val errorText: TextView
+        get() = binding.errorText
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private lateinit var viewModel: SampleFeatureViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentLoadingAndRetryBinding.inflate(layoutInflater)

@@ -24,11 +24,18 @@ import kotlinx.coroutines.launch
 /**
  * Holds business logic for Sample feature.
  * - Exposes only two liveData to UI, one exposing the UI state and one exposing single use events
- * - All the sources of variations for the UI are represented by flow which are all combined in a sinle method, which can be easily tested.
+ * - All the sources of variations for the UI are represented by flow which are all combined in a single method, which can be easily tested.
  *   - (This could be an external class injected and changed for china or hype)
  * - Exposes one method per gw request to trigger the request. This is specially interesting to allow the user retry failed request.
- * - Ui state is represented by a sealed class which containt all the required info to render the screen.
- * - Events are also a sealed class which
+ * - Ui state is represented by a sealed class which contains all the required info to render the screen.
+ * - Events are also a sealed class
+ *
+ * Next steps:
+ *  - Send some kind of single use events to the UI, maybe with errors
+ *  - Consider saving some state in the viewModel
+ *  - Move UI generation to an strategy
+ *  - add use cases and see how those would interact with each other (FlowUseCase, SingleShotUseCase)
+ *
  */
 class SampleFeatureViewModel(private val sampleFeatureRepo: SampleFeatureRepository) : ViewModel() {
 
