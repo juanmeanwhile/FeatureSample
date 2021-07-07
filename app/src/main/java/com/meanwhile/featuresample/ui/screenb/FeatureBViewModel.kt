@@ -1,4 +1,4 @@
-package com.meanwhile.featuresample.ui.featurescreen
+package com.meanwhile.featuresample.ui.screenb
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -13,6 +13,8 @@ import com.adidas.sample_feature.ui.featurescreen.UiData
 import com.meanwhile.common.Outcome
 import com.meanwhile.common.SingleLiveEvent
 import com.meanwhile.common.mapData
+import com.meanwhile.featuresample.domain.ActionUseCase
+import com.meanwhile.featuresample.domain.MainDataUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -33,33 +35,18 @@ import kotlinx.coroutines.launch
  *  - Send some kind of single use events to the UI, maybe with errors
  *  - Consider saving some state in the viewModel
  *  - Move UI generation to an strategy
- *  - add use cases and see how those would interact with each other (FlowUseCase, SingleShotUseCase)
  *
  */
-class SampleFeatureViewModel(private val sampleFeatureRepo: SampleFeatureRepository) : ViewModel() {
-
-    /**
-     * Trigger for the main request which loads data for the screen
-     */
-    private val _requestTrigger = MutableStateFlow(true)
-    private val requestFlow = _requestTrigger.flatMapLatest {
-        Log.d("FLAR", "main request triggered" )
-        sampleFeatureRepo.getData()
-    }
-
-    //TODO CON: actionFlow with the null check is a little boilerplated
-    /**
-     * Trigger for the action which can be done in this request
-     */
-    private val _actionTrigger = MutableStateFlow<Boolean?>(null)
-    private val actionFlow : Flow<Outcome<ActionResponse>?> = _actionTrigger.flatMapLatest { trigger ->
-        trigger?.let{ sampleFeatureRepo.performActionAtGw() } ?: flowOf(null)
-    }
+class FeatureBViewModel(
+        private val mainDataUseCase: MainDataUseCase,
+        private val actionUseCase: ActionUseCase
+        ) : ViewModel() {
 
     /**
      * LiveData to screen data
      */
-    val uiLiveData: LiveData<Outcome<UiData>> = combine(requestFlow, actionFlow) { outcomeA: Outcome<SampleData>, outcomeB: Outcome<ActionResponse>? ->
+    val uiLiveData: LiveData<Outcome<UiData>> = combine(mainDataUseCase.resultFlow, actionUseCase.resultFlow) {
+        outcomeA: Outcome<SampleData>, outcomeB: Outcome<ActionResponse>? ->
         Log.d("FLAR", "ui LiveData -> outcomeA: $outcomeA, action: $outcomeB" )
         generateUiData(outcomeA, outcomeB)
     }.asLiveData()
@@ -80,7 +67,7 @@ class SampleFeatureViewModel(private val sampleFeatureRepo: SampleFeatureReposit
      */
     fun requestData() {
         viewModelScope.launch {
-            _requestTrigger.emit(!_requestTrigger.value)
+            mainDataUseCase.launch()
         }
     }
 
@@ -90,7 +77,7 @@ class SampleFeatureViewModel(private val sampleFeatureRepo: SampleFeatureReposit
      */
     fun performActionAtGw() {
         viewModelScope.launch {
-            _actionTrigger.emit(!(_actionTrigger.value?:true))
+            actionUseCase.launch()
         }
     }
 

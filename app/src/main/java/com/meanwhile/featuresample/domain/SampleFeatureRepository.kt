@@ -1,4 +1,4 @@
-package com.adidas.sample_feature.data
+package com.meanwhile.featuresample.domain
 
 import android.util.Log
 import com.meanwhile.featuresample.model.ActionResponse
@@ -44,6 +44,7 @@ class SampleFeatureRepository() {
     }
 
     fun performActionAtGw() = flow<Outcome<ActionResponse>> {
+        Log.d("FLAR", "performActionAtGw triggered")
         doneActions++ // TODO for showcase purposes
 
         emit(Outcome.loading())
