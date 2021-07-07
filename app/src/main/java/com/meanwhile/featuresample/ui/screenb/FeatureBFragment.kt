@@ -1,11 +1,9 @@
-package com.meanwhile.featuresample.ui.featurescreen
+package com.meanwhile.featuresample.ui.screenb
 
 import android.animation.LayoutTransition.CHANGING
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -14,7 +12,8 @@ import com.adidas.sample_feature.ui.base.LoadingAndRetryFragment
 import com.adidas.sample_feature.ui.featurescreen.UiData
 import com.meanwhile.common.Outcome
 import com.meanwhile.featuresample.databinding.FragmentLoadingAndRetryBinding
-import com.meanwhile.featuresample.ui.screenb.FeatureBViewModel
+import com.meanwhile.featuresample.ui.featurescreen.SampleFeatureFragment
+import com.meanwhile.featuresample.ui.featurescreen.ViewModelFactory
 
 /**
  * This fragments serves as a base for most of the screens that needs tob be implemented in the app.
