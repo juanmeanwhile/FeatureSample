@@ -1,4 +1,4 @@
-package com.adidas.sample_feature.ui.featurescreen
+package com.meanwhile.featuresample.ui.model
 
 /**
  * Single use events happening in sample feature

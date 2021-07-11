@@ -5,14 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.meanwhile.featuresample.domain.SampleFeatureRepository
-import com.meanwhile.featuresample.model.ActionResponse
-import com.adidas.sample_feature.model.SampleData
-import com.adidas.sample_feature.ui.featurescreen.SampleFeatureEvent
-import com.adidas.sample_feature.ui.featurescreen.UiData
+import com.meanwhile.featuresample.domain.model.ActionResponse
+import com.meanwhile.featuresample.domain.model.SampleData
+import com.meanwhile.featuresample.ui.model.SampleFeatureEvent
+import com.meanwhile.featuresample.ui.model.UiData
 import com.meanwhile.common.Outcome
 import com.meanwhile.common.SingleLiveEvent
 import com.meanwhile.common.mapData
+import com.meanwhile.featuresample.domain.SampleFeatureRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -53,7 +53,7 @@ class SampleFeatureViewModel(private val sampleFeatureRepo: SampleFeatureReposit
      */
     private val _actionTrigger = MutableStateFlow<Boolean?>(null)
     private val actionFlow : Flow<Outcome<ActionResponse>?> = _actionTrigger.flatMapLatest { trigger ->
-        trigger?.let{ sampleFeatureRepo.performActionAtGw() } ?: flowOf(null)
+        trigger?.let{ sampleFeatureRepo.sendUserAction() } ?: flowOf(null)
     }
 
     /**

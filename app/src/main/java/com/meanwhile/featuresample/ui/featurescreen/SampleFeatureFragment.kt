@@ -4,14 +4,12 @@ import android.animation.LayoutTransition.CHANGING
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.adidas.sample_feature.ui.base.LoadingAndRetryFragment
-import com.adidas.sample_feature.ui.featurescreen.UiData
+import com.meanwhile.featuresample.ui.model.UiData
 import com.meanwhile.common.Outcome
 import com.meanwhile.featuresample.databinding.FragmentLoadingAndRetryBinding
 
@@ -46,11 +44,11 @@ class SampleFeatureFragment : LoadingAndRetryFragment<UiData>() {
     override val errorText: TextView
         get() = binding.errorText
 
-    private lateinit var viewModel: SampleFeatureViewModel
+    private lateinit var viewModel: FeatureViewModelWithUseCases
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentLoadingAndRetryBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(this, ViewModelFactory(this)).get(SampleFeatureViewModel::class.java)
+        viewModel = ViewModelProvider(this, ViewModelFactory(this)).get(FeatureViewModelWithUseCases::class.java)
         return binding.root
 
     }
@@ -75,6 +73,7 @@ class SampleFeatureFragment : LoadingAndRetryFragment<UiData>() {
     private fun setupObservers() {
         viewModel.eventLiveData.observe(viewLifecycleOwner) {
             // React to events like: navigation to other places, show toast, require permissions...
+
         }
 
         viewModel.uiLiveData.observe(viewLifecycleOwner) { outcome ->
@@ -87,7 +86,7 @@ class SampleFeatureFragment : LoadingAndRetryFragment<UiData>() {
         binding.root.layoutTransition.enableTransitionType(CHANGING)
 
         binding.actionButton.setOnClickListener {
-            viewModel.performActionAtGw()
+            viewModel.onUserActionDone()
         }
     }
 

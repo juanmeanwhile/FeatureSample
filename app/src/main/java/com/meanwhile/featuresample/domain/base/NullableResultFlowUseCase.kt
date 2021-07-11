@@ -25,12 +25,12 @@ abstract class NullableResultFlowUseCase<T> {
         trigger?.let { performAction() } ?: flowOf(null)
     }
 
-    protected abstract fun performAction() : Flow<T>
-
     /**
      * Triggers the execution of this use case
      */
     suspend fun launch() {
         _trigger.emit(!(_trigger.value?:true))
     }
+
+    protected abstract fun performAction() : Flow<T>
 }

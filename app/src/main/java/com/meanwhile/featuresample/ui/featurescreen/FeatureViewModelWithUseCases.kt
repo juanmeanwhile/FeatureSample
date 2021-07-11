@@ -1,25 +1,20 @@
-package com.meanwhile.featuresample.ui.screenb
+package com.meanwhile.featuresample.ui.featurescreen
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.meanwhile.featuresample.domain.SampleFeatureRepository
-import com.meanwhile.featuresample.model.ActionResponse
-import com.adidas.sample_feature.model.SampleData
-import com.adidas.sample_feature.ui.featurescreen.SampleFeatureEvent
-import com.adidas.sample_feature.ui.featurescreen.UiData
+import com.meanwhile.featuresample.domain.model.ActionResponse
+import com.meanwhile.featuresample.domain.model.SampleData
+import com.meanwhile.featuresample.ui.model.SampleFeatureEvent
+import com.meanwhile.featuresample.ui.model.UiData
 import com.meanwhile.common.Outcome
 import com.meanwhile.common.SingleLiveEvent
 import com.meanwhile.common.mapData
 import com.meanwhile.featuresample.domain.ActionUseCase
 import com.meanwhile.featuresample.domain.MainDataUseCase
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 /**
@@ -37,7 +32,7 @@ import kotlinx.coroutines.launch
  *  - Move UI generation to an strategy
  *
  */
-class FeatureBViewModel(
+class FeatureViewModelWithUseCases(
         private val mainDataUseCase: MainDataUseCase,
         private val actionUseCase: ActionUseCase
         ) : ViewModel() {
@@ -61,7 +56,6 @@ class FeatureBViewModel(
      */
     val eventLiveData: LiveData<SampleFeatureEvent> = _eventLiveData
 
-    //TODO CON: not loving the ! from the previous value
     /**
      * Trigger request to get data
      */
@@ -71,11 +65,10 @@ class FeatureBViewModel(
         }
     }
 
-    //TODO CON: Not loving the way to propagate trigger
     /**
      * Trigger request to perform action at GW
      */
-    fun performActionAtGw() {
+    fun onUserActionDone() {
         viewModelScope.launch {
             actionUseCase.launch()
         }

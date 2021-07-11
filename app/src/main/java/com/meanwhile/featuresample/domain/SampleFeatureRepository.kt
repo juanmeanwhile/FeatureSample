@@ -1,67 +1,32 @@
 package com.meanwhile.featuresample.domain
 
-import android.util.Log
-import com.meanwhile.featuresample.model.ActionResponse
-import com.adidas.sample_feature.model.SampleData
 import com.meanwhile.common.Outcome
+import com.meanwhile.featuresample.data.FeatureRepository
+import com.meanwhile.featuresample.data.network.BackendApi
 import com.meanwhile.featuresample.data.toActionResponse
 import com.meanwhile.featuresample.data.toSampleData
-import kotlinx.coroutines.delay
+import com.meanwhile.featuresample.domain.model.ActionResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import java.io.IOException
-import com.adidas.sample_feature.model.gw.ActionResponse as GwActionResponse
-import com.meanwhile.featuresample.model.gw.SampleData as GwSampleData
+import kotlinx.coroutines.flow.flowOn
 
-class SampleFeatureRepository() {
+class SampleFeatureRepository(private val api: BackendApi) : FeatureRepository {
 
-    private var doneActions = 1
-
-    private var mainDataError = false
-
-    // TODO add db layer
-    fun getData() = flow<Outcome<SampleData>> {
+    // Get initial data for the screen
+    override fun getData() = flow {
+        // wd could get data from persistence layer here
         emit(Outcome.loading())
+        val response = api.getData()
+        emit(Outcome.success(response.toSampleData()))
+    }.catch { emit(Outcome.failure(it)) }
+            .flowOn(Dispatchers.IO)
 
-        // If DB layer, the obtain local info
-        // val cachedData = db.getLocalData()
-        // emit(Outcome.loading(partialData = cachedData))
-
-        kotlin.runCatching {
-            // val sampleData = api.getSampleData()
-            delay(1500) // simulate call
-
-            if (mainDataError) {
-                val gwData = GwSampleData("Data from the initial request")
-                emit(Outcome.success(gwData.toSampleData()))
-            } else {
-                mainDataError = true
-                throw IOException("It's gateway's fault")
-            }
-
-        }.onFailure {
-            emit(Outcome.failure(it))
-        }
-    }
-
-    fun performActionAtGw() = flow<Outcome<ActionResponse>> {
-        Log.d("FLAR", "performActionAtGw triggered")
-        doneActions++ // TODO for showcase purposes
-
+    // perform action at backend and return response
+    override fun sendUserAction() = flow {
         emit(Outcome.loading())
-        runCatching {
-            // val sampleData = api.performActionAtGw()
-            delay(1000) // simulate call
-
-            if (doneActions % 4 == 0){
-                //Return error every 4 actions
-                throw IOException("It's gateway's fault")
-            }  else {
-                val gwData = GwActionResponse(doneActions)
-                emit(Outcome.success(gwData.toActionResponse()))
-            }
-
-        }.onFailure {
-            emit(Outcome.failure(it))
-        }
-    }
+        val response = api.performAction().toActionResponse()
+        emit(Outcome.success(response))
+    }.catch { emit(Outcome.failure<ActionResponse>(it)) }
+            .flowOn(Dispatchers.IO)
 }
